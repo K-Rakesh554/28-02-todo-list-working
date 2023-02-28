@@ -8,12 +8,7 @@ interface Props {
   handleCheck(taskID: number, checked: boolean): void;
 }
 
-export default function TodoList({
-  task,
-  tasktodelete,
-  tasktoedit,
-  handleCheck,
-}: Props) {
+function TodoList({ task, tasktodelete, tasktoedit, handleCheck }: Props) {
   const buttonedit = (): void => {
     tasktoedit(task.ID);
   };
@@ -83,3 +78,4 @@ export default function TodoList({
     </tr>
   );
 }
+export default TodoList;
