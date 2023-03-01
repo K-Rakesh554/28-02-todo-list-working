@@ -5,40 +5,28 @@ import { Itask } from './interface';
 import TodoList from './components/todolist';
 
 export default function App() {
-  // let [task, setTask] = useState<string>('');
-  // let [deadline, setdeadline] = useState<number>(0);
-
+  let [task, setTask] = useState<string>('');
+  let [deadline, setdeadline] = useState<number>(0);
   let [todolist, setToDoList] = useState<Itask[]>([]);
 
   const Identity = useRef(null);
 
   const displaydate = new Date();
 
-  // task and deadline
-  const task = useRef(null);
-  const deadline = useRef(null);
-
   const checked = useRef(true);
   const checkid = useRef(null);
 
-  // // handler to set data
-  // const handledatadisplay = (event: ChangeEvent<HTMLInputElement>): void => {
-  //   if (event.target.name === 'task') setTask(event.target.value);
-  //   else setdeadline(Number(event.target.value));
-  // };
-  //--------------------***--------------
-
+  // handler to set data
   const handledatadisplay = (event: ChangeEvent<HTMLInputElement>): void => {
-    if (event.target.name === 'task') {
-      task.current = event.target.value;
-    } else deadline.current = Number(event.target.value);
+    if (event.target.name === 'task') setTask(event.target.value);
+    else setdeadline(Number(event.target.value));
   };
 
   //handler to push data
-  const handledatapush = () => {
+  const handledatapush = (): void => {
     const genID = Date.now();
 
-    if (task.current == '' || deadline.current == 0) {
+    if (task == '' || deadline == 0) {
       alert('please fill all the fields');
     } else {
       if (Identity.current) {
@@ -51,8 +39,8 @@ export default function App() {
             //   isComplete: checked.current,
             // };
 
-            item.taskname = task.current;
-            item.daystocomplete = deadline.current;
+            item.taskname = task;
+            item.daystocomplete = deadline;
           }
           return item;
         });
@@ -60,8 +48,8 @@ export default function App() {
         setToDoList(newarr);
       } else {
         const newtask = {
-          taskname: task.current,
-          daystocomplete: deadline.current,
+          taskname: task,
+          daystocomplete: deadline,
           ID: genID,
           isComplete: true,
         };
@@ -69,8 +57,8 @@ export default function App() {
       }
 
       console.log(todolist);
-      task.current = '';
-      deadline.current = 0;
+      setTask('');
+      setdeadline(0);
 
       Identity.current = null;
     }
@@ -88,10 +76,11 @@ export default function App() {
   // handle edit data
   const handleEdit = (taskidtoedit: number): void => {
     Identity.current = taskidtoedit;
+
     todolist.map((clickedForEdit) => {
       if (Identity.current === clickedForEdit.ID) {
-        task.current = clickedForEdit.taskname;
-        deadline.current = clickedForEdit.daystocomplete;
+        setTask(clickedForEdit.taskname);
+        setdeadline(clickedForEdit.daystocomplete);
 
         if (Identity.current) {
         }
@@ -103,17 +92,23 @@ export default function App() {
 
   //handle checkbox toggle
   const handleCheckbox = (taskIdtoEdit: number, taskBoxVal: boolean): void => {
-    checkid.current = taskIdtoEdit;
-    checked.current = taskBoxVal;
+    if (Identity.current != null) {
+      checkid.current = null;
+      checked.current = false;
+    } else {
+      checkid.current = taskIdtoEdit;
+      checked.current = taskBoxVal;
 
-    if (checkid.current) {
-      const newarr = todolist.map((item) => {
-        if (item.ID === checkid.current) {
-          item.isComplete = checked.current;
-        }
-        return item;
-      });
-      setToDoList(newarr);
+      if (checkid.current) {
+        const newarr = todolist.map((item) => {
+          if (item.ID === checkid.current) {
+            item.isComplete = checked.current;
+          }
+          return item;
+        });
+
+        setToDoList(newarr);
+      }
     }
   };
 
@@ -128,20 +123,20 @@ export default function App() {
         <label>SET GOAL:</label>
         <input
           type="text"
-          value={task.current}
+          value={task}
           name="task"
           placeholder="input task...."
           onChange={handledatadisplay}
-          ref={task}
+          required
         />
         <label> BALL-PARK YOUR GOAL:</label>
         <input
           type="number"
-          value={deadline.current}
+          value={deadline}
           name="deadline"
           placeholder="deadline in days"
           onChange={handledatadisplay}
-          ref={deadline}
+          required
         />
 
         <button onClick={handledatapush} id="button">
